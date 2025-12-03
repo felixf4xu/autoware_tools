@@ -13,11 +13,7 @@ else ()
 endif ()
 
 find_package(PkgConfig)
-find_path(GeographicLib_INCLUDE_DIR GeographicLib/Config.h
-  PATH_SUFFIXES GeographicLib
-)
-set(GeographicLib_INCLUDE_DIRS ${GeographicLib_INCLUDE_DIR})
-find_library(GeographicLib_LIBRARIES NAMES Geographic)
+pkg_check_modules(GeographicLib REQUIRED IMPORTED_TARGET geographiclib)
 
 find_package(OpenMP REQUIRED)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
@@ -25,7 +21,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 include_directories(src/include)
 
 ament_auto_add_library(converter_lib src/converter_from_llh.cpp src/converter_to_llh.cpp)
-target_link_libraries(converter_lib ${GeographicLib_LIBRARIES} ${PCL_LIBRARIES})
+target_link_libraries(converter_lib PkgConfig::GeographicLib ${PCL_LIBRARIES})
 
 ament_auto_add_executable(pointcloud_projection_converter src/pcd_conversion.cpp)
 target_link_libraries(pointcloud_projection_converter converter_lib yaml-cpp)
